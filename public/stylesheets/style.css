@@ -92,7 +92,6 @@ button:hover {
 /*-- main --*/
 .main {
   margin: 4em auto;
-  width: 50%;
 }
 .banner {
   background: url(/images/banner.jpg)no-repeat 0px 0px;
@@ -101,19 +100,14 @@ button:hover {
 
 /*--signin-form--*/
 .w3 {
-  float: left;
-  width: 48%;
-  margin-right: 4%;
 }
 .agile {
-  float: right;
-  width: 48%;
 }
 .signin-form {
   background: url(../images/banner1.jpg)no-repeat 0px 0px;
   background-size: cover;
   padding: 2em 2em;
-text-align: center;
+  text-align: center;
 }
 .signin-form h3 {
   font-size: 2em;
@@ -139,11 +133,11 @@ text-align: center;
   color: #FFF;
   border: none;
   border-bottom: 2px solid #fff;
-letter-spacing: 1px;
-text-align:center;
+  letter-spacing: 1px;
+  text-align:center;
 }
 .signin-form input[type="text"] {
-  background: none;
+  background: none; 
   display: block;
 }
 .signin-form input[type="password"] {
@@ -151,7 +145,7 @@ text-align:center;
   display: block;
 }
 ::-webkit-input-placeholder{
-color:#fff !important;
+  color:#fff !important;
 }
 .signin-form input[type="submit"] {
   outline: none;
@@ -165,14 +159,14 @@ color:#fff !important;
   cursor: pointer;
   background: #0b4379;
   box-shadow: 0px 2px 1px rgba(28, 28, 29, 0.42);
-border-radius: 22px;
+  border-radius: 22px;
 
 }
 .signin-form input[type="submit"]:hover {
   color: #fff;
   background: #002242;
   transition: .5s all;
--webkit-transition: .5s all;
+  -webkit-transition: .5s all;
   -moz-transition: .5s all;
   -o-transition: .5s all;
   -ms-transition: .5s all;
@@ -199,12 +193,10 @@ h5 {
 /*---- responsive-design -----*/
 @media(max-width:1440px){
 .main {
-  width: 56%;
 }
 }
 @media(max-width:1366px){
 .main {
-  width: 59%;
 }
 }
 @media(max-width:1280px){
@@ -212,18 +204,15 @@ h1 {
   font-size: 2.5em;
 }
 .main {
-  width: 63%;
 }
 }
 @media(max-width:1080px){
 .main {
-  width: 74%;
-margin: 2em auto;
+  margin: 2em auto;
 }
 }
 @media(max-width:1024px){
 .main {
-  width: 82%;
 }
 .signin-form {
   padding: 3em 2.5em;
@@ -231,17 +220,14 @@ margin: 2em auto;
 }
 @media(max-width:991px){
 .main {
-  width: 85%;
 }
 }
 @media(max-width:900px){
 .main {
-  width: 93%;
 }
 }
 @media(max-width:800px){
 .main {
-  width: 51%;
 }
 .w3 {
   float: none;

@@ -1,6 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../../auth-system/models/user');
+var mongo = require('mongodb').MongoClient;
+var objectId = require('mongodb').ObjectID;
+var assert = require('assert');
+
+var url = 'mongodb://austin752:ae01llc06@cluster0-shard-00-00-0ynct.mongodb.net:27017,cluster0-shard-00-01-0ynct.mongodb.net:27017,cluster0-shard-00-02-0ynct.mongodb.net:27017/mongo-test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
+
+var User = require('../auth-system/models/user');
 
 //GET route for reading data
 router.get('/users', function (req, res, next) {
@@ -8,11 +14,11 @@ router.get('/users', function (req, res, next) {
 });
 
 router.get('/users/register', function(req, res, next) {
-  res.render('./../views/register');
+  res.render('../views/register');
 });
 
 router.get('/users/login', function(req, res, next) {
-  res.render(path.join(__dirname + './views/login');
+  res.render('../views/login');
 });
 
 //POST route for updating data
