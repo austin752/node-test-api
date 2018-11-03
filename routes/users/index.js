@@ -8,11 +8,11 @@ router.get('/users', function (req, res, next) {
 });
 
 router.get('/users/register', function(req, res, next) {
-  res.render(path.join(__dirname + '/views/register');
+  res.render(path.join(__dirname + './views/register');
 });
 
 router.get('/users/login', function(req, res, next) {
-  res.render(path.join(__dirname + '/views/login');
+  res.render(path.join(__dirname + './views/login');
 });
 
 //POST route for updating data
