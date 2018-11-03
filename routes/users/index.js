@@ -8,7 +8,7 @@ router.get('/users', function (req, res, next) {
 });
 
 router.get('/users/register', function(req, res, next) {
-  res.render(path.join(__dirname + '../views/register');
+  res.render('./../views/register');
 });
 
 router.get('/users/login', function(req, res, next) {
