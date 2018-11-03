@@ -1,9 +1,9 @@
 {
-  "name": "05-express-first-app",
-  "version": "0.0.0",
+  "name": "node-test-api",
+  "version": "0.0.6",
   "private": true,
   "scripts": {
-    "start": "node www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "bcrypt": "^3.0.2",
