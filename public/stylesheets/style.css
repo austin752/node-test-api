@@ -84,4 +84,11 @@ button:hover {
   background: #95a5a6;
   border: 1px solid black;
 }
+.title{
+  width:100%;
+  text-align:center;
+}
 
+#home-image{
+  max-width:200px;
+}

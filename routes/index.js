@@ -5,8 +5,8 @@ var objectId = require('mongodb').ObjectID;
 var assert = require('assert');
 var User = require('../models/user');
 
-var url = 'mongodb://<USERNAME>:<PASSWORD>@cluster0-shard-00-00-0ynct.mongodb.net:27017,cluster0-shard-00-01-0ynct.mongodb.net:27017,cluster0-shard-00-02-0ynct.mongodb.net:27017/mongo-data?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
-var url2 = 'mongodb://<USERNAME>:<PASSWORD>@cluster0-shard-00-00-0ynct.mongodb.net:27017,cluster0-shard-00-01-0ynct.mongodb.net:27017,cluster0-shard-00-02-0ynct.mongodb.net:27017/mongo-users?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
+var url = 'mongodb://someone:apassword@cluster0-shard-00-00-0ynct.mongodb.net:27017,cluster0-shard-00-01-0ynct.mongodb.net:27017,cluster0-shard-00-02-0ynct.mongodb.net:27017/mongo-data?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
+var url2 = 'mongodb://someone:apassword@cluster0-shard-00-00-0ynct.mongodb.net:27017,cluster0-shard-00-01-0ynct.mongodb.net:27017,cluster0-shard-00-02-0ynct.mongodb.net:27017/mongo-users?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
 
 // get data from selected database
 router.get('/get-data', function(req, res, next) {
@@ -108,17 +108,15 @@ router.get('/register', function(req, res, next) {
       }
 
     mongo.connect(url2, function(err, db) {
-      //assert.equal(null, err);
-      // var emailQuery = db.collection('mongo-users').find({email:userData.email})
-      // var userQuery = db.collection('mongo-users').find({username:userData.username})
+      assert.equal(null, err);
+      // var emailQuery = db.collection('mongo-users').findOne({'email':req.body.email})
+      // var userQuery = db.collection('mongo-users').findOne({'username':req.body.username})
       // if(emailQuery){
       //   console.log('Email already used, please try again.');
       //   res.redirect('/register');
-      //   //res.json({status : "error", message:'email already used, please try again.'}).redirect('/register');
       // }else if(userQuery){
       //   console.log('Username already in use, please try again.');
       //   res.redirect('/register');
-      //   //res.json({status : "error", message:'email already used, please try again.'}).redirect('/register');
       // }else{
         db.collection('mongo-users').insertOne(userData, function(err, result) {
           assert.equal(null, err);
@@ -134,59 +132,48 @@ router.get('/register', function(req, res, next) {
 
 // route for user Login
 router.get('/login', function(req, res, next) {
-      res.render('../views/users/login');
-  })
-  .post('/login', function (req, res, next) {
-      var username = req.body.username,
-          password = req.body.password;
-          
-      mongo.connect(url2, function(err, db) {
-        db.collection('mongo-users').findOne({'username': username})
-        .then(function(doc) {
-          console.log(doc);
-              if(!doc){
-                  console.log('user not found')
-                  res.redirect('/login');
-              } else if (password != doc.password) {
-                  res.redirect('/login');
-                  //console.log({userData:password})
-              } else {
-                  //req.session.user = user;
-                  res.redirect('/dashboard');
-                  console.log(user)
-              }
-          });
-        });
+        res.render('../views/users/login');
+    })
+  .post('/login', function(req, res) {
+    mongo.connect(url2, function(err, db) {
+      db.collection('mongo-users').findOne({'username': req.body.username}, function(err, user) {
+        if (!user) {
+            res.render('../views/users/login', { error: 'Invalid email or password.' });
+          } else {
+            if (req.body.password === user.password) {
+              // sets a cookie with the user's info
+              //req.session.user = user.username;
+              res.redirect('/dashboard');
+            } else {
+              res.render('../views/users/login', { error: 'Invalid email or password.' });
+            }
+          }
       });
-
-
+    });
+  });
 
 // route for user's dashboard
-router.get('/dashboard', function(req, res, next) {
-  res.render('../views/users/dashboard');
-  // if (req.session.user && req.cookies.user_sid) {
-  //     res.render('../views/users/dashboard');
+router.get('/dashboard', function(req, res) {
+  //if (req.session && req.session.user) { // Check if session exists
+        res.render('../views/users/dashboard');
   // } else {
-  //     res.redirect('/login');
+  //   res.redirect('/login');
   // }
 });
 
 
 // route for user logout
 router.get('/logout', function(req, res, next) {
-  res.clearCookie('user_sid');
-  //req.session.reset();
-  res.redirect('/');
-  // if (req.session.user && req.cookies.user_sid) {
-  //     res.clearCookie('user_sid');
-  //     res.redirect('/');
-  // } else {
-  //     res.redirect('/login');
-  // }
-});
+//   if (req.session.user && req.cookies.user_sid) {
+//       req.session.destroy();
+        //req.session.reset();
+        res.redirect('/');
+//   } else {
+//       res.redirect('/login');
+//   }
+ });
 
-// This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
-// This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
+// look for cookie
 router.use((req, res, next) => {
   if (req.cookies.user_sid && !req.session.user) {
       res.clearCookie('user_sid');        
@@ -213,9 +200,25 @@ function requireLogin (req, res, next) {
   if (!req.user) {
     res.redirect('/login');
   } else {
-    res.redirect('/dashboard');
+    next();
   }
 };
 
-
+router.use(function(req, res, next) {
+  if (req.session && req.session.user) {
+    mongo.connect(url2, function(err, db) {
+      db.collection('mongo-users').findOne({'email': req.session.user.email}, function(err, user) {
+        if (user) {
+          req.user = user;
+          delete req.user.password; // delete the password from the session
+          req.session.user = user;  //refresh the session value
+          res.locals.user = user;
+        }
+        // finishing processing the middleware and run the route
+        next();
+      });
+    });
+  }
+});
+    
 module.exports = router;

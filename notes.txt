@@ -1,3 +1,0 @@
-1. ajax not outputting alert to screen 
-2. passwords not hashed in database
-

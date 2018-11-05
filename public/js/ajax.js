@@ -9,9 +9,9 @@ $(function(){
         var passwordConf  = $("#passwordConf").val();
         
         if(!username || !email || !password || !passwordConf){ 
-            $("#msgDiv").show().html("All fields are required.");
+            $("#msgDiv").addClass('alert-danger').show().html("All fields are required.");
         } else if(passwordConf != password){
-            $("#msgDiv").show().html("Passwords should match.");
+            $("#msgDiv").addClass('alert-danger').show().html("Passwords should match.");
         } 
         else{ 
             $.ajax({
@@ -26,9 +26,9 @@ $(function(){
                             errors = errors +'<li>'+value.msg+'</li>';
                         });
                         errors = errors+ '</ul>';
-                        $("#msgDiv").html(errors).show();
+                        $("#msgDiv").addClass('alert-danger').html(errors).show();
                     }else{
-                        $("#msgDiv").removeClass('alert-danger').addClass('alert-success').html(data.message).show(); 
+                        $("#msgDiv").addClass('alert-success').html(data.message).show(); 
                         window.location.href = '/login';
                     }
                 }
@@ -36,42 +36,37 @@ $(function(){
         }
     });
 
-    // registration
-    var loginForm = $(".login-form")
-    loginForm.submit(function(event){
-        event.preventDefault()
-        var username   = $("#username").val();
-        var password   = $("#password").val();
+    // login
+    // var logForm = $(".login-form")
+    // logForm.submit(function(event){
+    //     event.preventDefault()
+    //     var username   = $("#username").val();
+    //     var password   = $("#password").val();
         
-        if(!username || !password){ 
-            $("#msgDiv").show().html("All fields are required.");
-        } 
-        else{ 
-            $.ajax({
-                url: "/login",
-                method: "POST",
-                data: { username: username, password: password }
-            }).done(function( data ) {
-                if ( data ) {
-                    if(data.status == 'error'){
-                        var errors = '<ul>';
-                        $.each( data.message, function( key, value ) {
-                            errors = errors +'<li>'+value.msg+'</li>';
-                        });
-                        errors = errors+ '</ul>';
-                        $("#msgDiv").html(errors).show();
-                    }else{
-                        $("#msgDiv").removeClass('alert-danger').addClass('alert-success').html(data.message).show(); 
-                        window.location.href = '/dashboard';
-                    }
-                }
-            });
-        }
-    });
+    //     if(!username || !password){ 
+    //         $("#msgDiv").addClass('alert-danger').show().html("All fields are required.");
+    //     } else if(!password){
+    //         $("#msgDiv").addClass('alert-danger').show().html("Passwords required.");
+    //     } 
+    //     else{ 
+    //         $.ajax({
+    //             url: '/login',
+    //             method: 'POST',
+    //             data: { username: username, password: password },
+    //             success: function(data)
+    //             {
+    //                 window.location.href = '/dashboard';
+    //             },
+    //             error: function(error){
+    //                 alert('an error occurred')
+    //             }
+    //         })
+    //     }
+    // });
 
-    // insert and update 
+    // insert
     var ajaxForm = $(".ajax-form")
-
+    var ajaxFormUpdate = $(".ajax-form-update")
     ajaxForm.submit(function(event){
         event.preventDefault();
         console.log("form not sending")
@@ -79,24 +74,41 @@ $(function(){
         var actionEndPoint = thisForm.attr("action");
         var httpMethod = thisForm.attr("method");
         var data = thisForm.serialize();
+        $.ajax({
+            url: actionEndPoint,
+            method: httpMethod,
+            data: data,
+            success: function(data)
+            {
+                ajaxForm[0].reset()
+                alert('Item has been added.')
+            },
+            error: function(error){
+                alert('an error occurred')
+            }
+        })
+    });
 
+    // update 
+    var ajaxFormUpdate = $(".ajax-form-update")
+    ajaxFormUpdate.submit(function(event){
+        event.preventDefault();
+        console.log("form not sending")
+        var thisForm = $(this)
+        var actionEndPoint = thisForm.attr("action");
+        var httpMethod = thisForm.attr("method");
+        var data = thisForm.serialize();
+        console.log(data)
         $.ajax({
             url: actionEndPoint,
             method: httpMethod,
             data: data,
             success: function(data){
-                $.alert({
-                    title: "Item Added!",
-                    content: "Your entry has been added",
-                    theme:"modern"
-                })
+                ajaxFormUpdate[0].reset()
+                alert('Item has been updated.')
             },
             error: function(error){
-                $.alert({
-                    title: "Oops!",
-                    content: "an error occurred",
-                    theme:"modern"
-                })
+                alert('an error occurred')
             }
         })
 
@@ -118,68 +130,24 @@ $(function(){
             method: httpMethod,
             data: data,
             success: function(data){
-                alert({
-                    title: "Item deleted!",
-                    content: "Your entry has been deleted",
-                    theme:"modern"
-                });
+                alert('Item has been deleted.')
+                window.location.href = '/get-data';
             },
             error: function(error){
-                alert({
-                    title: "Oops!",
-                    content: "an error occurred",
-                    theme:"modern"
-                })
+                if(data.status == 'error'){
+                    var errors = '<ul>';
+                    $.each( data.message, function( key, value ) {
+                        errors = errors +'<li>'+value.msg+'</li>';
+                    });
+                    errors = errors+ '</ul>';
+                    $("#msgDiv").html(errors).show();
+                }
             }
         })
 
     });
 
-// add above here
+// end function
 });
 
 
-
-// var regForm = $(".register-form")
-// var regFormMethod = regForm.attr("method")
-// var regFormEndPoint = regForm.attr("action")
-// regForm.submit(function(event){
-//     event.preventDefault()
-//     var regFormData = regForm.serialize()
-//     var thisForm = $(this)
-//     $.ajax({
-//         method: regFormMethod,
-//         url: regFormEndPoint,
-//         data: regFormData,
-//         success: function(data){
-//             if (data.regFormData['password'] === data.regFormData['passwordConf']){
-//                 regForm[0].reset()
-//                 alert({
-//                     title: "Success",
-//                     content: 'Logging in...',
-//                     theme:"modern",
-//                 });
-//             }else{
-//                 regForm[0].reset()
-//                 alert({
-//                     title: "Something went wrong!",
-//                     content: 'Passwords need to match, please try again.',
-//                     theme:"modern",
-//                 });
-//             }
-//         },
-//         error: function(error){
-//             console.log('error')
-//             console.log(error.data)
-//             $.alert({
-//                 title: "Oops!",
-//                 content: msg,
-//                 theme:"modern",
-//             })
-//         }
-//     })
-// });
-
-
-    
-    
