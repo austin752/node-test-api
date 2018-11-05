@@ -1,13 +1,13 @@
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
+var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var hbs = require('express-handlebars');
-
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var session = require('client-sessions');
 
+// invoke an instance of express application.
 var app = express();
 
 // view engine setup
@@ -15,15 +15,22 @@ app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout', layoutsDir: __di
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-app.use(logger('dev'));
+// initialize body-parser to parse incoming parameters requests to req.body
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: false }));
+
+// initialize cookie-parser to allow us access the cookies stored in the browser. 
 app.use(cookieParser());
+
+// set path to static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// set morgan to log info about our requests for development use.
+app.use(morgan('dev'));
+
+// route to home path
 app.use('/', routes);
-//app.use('/users', require('./routes/users/index.js'));
-//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -56,5 +63,15 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// initialize express-session to allow us track the logged-in user across sessions.
+app.use(session({
+  cookieName: 'session',
+  secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+  httpOnly: true,
+  secure: true,
+  ephemeral: true
+}));
 
 module.exports = app;

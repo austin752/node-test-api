@@ -52,12 +52,3 @@ var server = app.listen(port, function() {
 //   });
 // });
 
-// //use sessions for tracking logins
-// exp.use(session({
-//   secret: 'work hard',
-//   resave: true,
-//   saveUninitialized: false,
-//   store: new MongoStore({
-//     mongooseConnection: db
-//   })
-// }));
